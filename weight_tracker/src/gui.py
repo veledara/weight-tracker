@@ -1,5 +1,6 @@
 from asyncio.windows_events import NULL
 import tkinter as tk
+from tkinter.filedialog import asksaveasfilename, askopenfilename
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import ttk
 from datetime import datetime
@@ -17,8 +18,12 @@ class WeightTrackerGUI:
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
         self.graph = GraphMaker()
+        self.file_path = "data.json"
 
         self.main_window_show()
+
+    def __del__(self):
+        self.save_data()
 
     def main_window_show(self):
         self.weight_change_graph_labelframe = tk.LabelFrame(self.root, bg="lightgray")
@@ -48,7 +53,7 @@ class WeightTrackerGUI:
         self.add_mark_button = ttk.Button(
             self.add_frame,
             text="Add",
-            command=lambda: self.add_mark(self.weight_entry.get().split("|")[0]),
+            command=lambda: self.add_mark(self.weight_entry.get()),
         )
         self.add_mark_button.grid(
             column=0, row=2, sticky=(tk.N, tk.W, tk.E, tk.S), padx=5, pady=5
@@ -67,6 +72,7 @@ class WeightTrackerGUI:
             column=0, row=4, sticky=(tk.N, tk.S), padx=5, pady=5
         )
         self.update_weight_change_label()
+        self.load_data()
 
     def update_weight_change_label(self):
         if len(self.graph.marks) > 1:
@@ -105,7 +111,10 @@ class WeightTrackerGUI:
 
     def add_mark(self, weight: float):
         if self.weight_validation(weight):
-            self.graph.add_mark(self.date_label.cget("text"), weight)
+            self.graph.add_mark(
+                datetime.strptime(self.date_label.cget("text"), f"%d.%m.%y\n%H:%M:%S"),
+                weight,
+            )
             self.update_graph()
 
     def remove_last_mark(self):
@@ -119,6 +128,21 @@ class WeightTrackerGUI:
             return float_value > 0
         except (ValueError, TypeError):
             return False
+
+    def save_data(self):
+        if self.graph is not None:
+            json_data = self.graph.to_json()
+            with open(self.file_path, "w") as file:
+                file.write(json_data)
+
+    def load_data(self):
+        try:
+            with open(self.file_path, "r") as file:
+                json_data = file.read()
+            self.graph = GraphMaker.from_json(json_data)
+            self.update_graph()
+        except FileNotFoundError:
+            self.graph = GraphMaker()
 
     def run(self):
         self.root.mainloop()

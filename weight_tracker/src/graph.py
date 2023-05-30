@@ -1,3 +1,4 @@
+import json
 from matplotlib.figure import Figure
 from typing import List
 from datetime import datetime
@@ -8,7 +9,7 @@ class Mark:
     weight: float
 
     def __init__(self, date: datetime, weight: float) -> None:
-        self.date = datetime.strptime(date, f"%d.%m.%y\n%H:%M:%S")
+        self.date = date
         self.weight = float(weight)
 
     def __repr__(self) -> str:
@@ -54,12 +55,27 @@ class GraphMaker:
     def show_weight_change(self) -> None:
         return round(self.get_weight_on_start() - self.get_current_weight(), 1)
 
+    def to_json(self) -> str:
+        data = {
+            "marks": [
+                (mark.date.strftime(f"%d.%m.%y\n%H:%M:%S"), mark.weight)
+                for mark in self.marks
+            ]
+        }
+        return json.dumps(data)
+
+    @classmethod
+    def from_json(cls, json_str: str) -> "GraphMaker":
+        data = json.loads(json_str)
+        graph = cls()
+        for date_str, weight in data["marks"]:
+            date = datetime.strptime(date_str, f"%d.%m.%y\n%H:%M:%S")
+            graph.add_mark(date, weight)
+        return graph
+
     def __repr__(self) -> str:
         return f"Marks are {self.marks}"
 
 
 if __name__ == "__main__":
-    graph = GraphMaker()
-    current_time = datetime.now()
-    graph.add_mark(datetime(2023, 1, 1), 70.6)
-    print(graph)
+    pass
