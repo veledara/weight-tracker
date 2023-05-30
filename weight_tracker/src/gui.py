@@ -1,8 +1,6 @@
-from asyncio.windows_events import NULL
 import tkinter as tk
-from tkinter.filedialog import asksaveasfilename, askopenfilename
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import ttk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from datetime import datetime
 from graph import GraphMaker
 
@@ -74,6 +72,22 @@ class WeightTrackerGUI:
         self.update_weight_change_label()
         self.load_data()
 
+    def update_graph(self):
+        for widgets in self.weight_change_graph_labelframe.winfo_children():
+            widgets.destroy()
+        self.graph.update_axes()
+        self.update_weight_change_label()
+        canvas = FigureCanvasTkAgg(
+            self.graph.fig, master=self.weight_change_graph_labelframe
+        )
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+    def update_date_label(self):
+        current_time = datetime.now().strftime(f"%d.%m.%y\n%H:%M:%S")
+        self.date_label.config(text=current_time)
+        self.date_label.after(1000, self.update_date_label)
+
     def update_weight_change_label(self):
         if len(self.graph.marks) > 1:
             current_weight_change = self.graph.show_weight_change()
@@ -92,22 +106,6 @@ class WeightTrackerGUI:
         else:
             label_text = f"Ваш вес не изменился."
         self.weight_change_label.config(text=label_text)
-
-    def update_date_label(self):
-        current_time = datetime.now().strftime(f"%d.%m.%y\n%H:%M:%S")
-        self.date_label.config(text=current_time)
-        self.date_label.after(1000, self.update_date_label)
-
-    def update_graph(self):
-        for widgets in self.weight_change_graph_labelframe.winfo_children():
-            widgets.destroy()
-        self.graph.update_axes()
-        self.update_weight_change_label()
-        canvas = FigureCanvasTkAgg(
-            self.graph.fig, master=self.weight_change_graph_labelframe
-        )
-        canvas.draw()
-        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
     def add_mark(self, weight: float):
         if self.weight_validation(weight):
@@ -130,10 +128,9 @@ class WeightTrackerGUI:
             return False
 
     def save_data(self):
-        if self.graph is not None:
-            json_data = self.graph.to_json()
-            with open(self.file_path, "w") as file:
-                file.write(json_data)
+        json_data = self.graph.to_json()
+        with open(self.file_path, "w") as file:
+            file.write(json_data)
 
     def load_data(self):
         try:
@@ -142,7 +139,7 @@ class WeightTrackerGUI:
             self.graph = GraphMaker.from_json(json_data)
             self.update_graph()
         except FileNotFoundError:
-            self.graph = GraphMaker()
+            self.update_graph()
 
     def run(self):
         self.root.mainloop()
