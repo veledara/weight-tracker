@@ -37,9 +37,7 @@ class WeightTrackerGUI:
             column=0, row=1, sticky=(tk.N, tk.W, tk.E, tk.S), padx=20, pady=10
         )
         self.date_label = ttk.Label(self.add_frame, font=("Arial", 16))
-        self.date_label.grid(
-            column=0, row=0, sticky=(tk.N, tk.S), padx=5, pady=5
-        )
+        self.date_label.grid(column=0, row=0, sticky=(tk.N, tk.S), padx=5, pady=5)
         self.update_label()
 
         self.weight_entry = ttk.Entry(self.add_frame, width=15)
@@ -73,7 +71,7 @@ class WeightTrackerGUI:
     def update_graph(self):
         for widgets in self.weight_change_graph_labelframe.winfo_children():
             widgets.destroy()
-        self.graph.update_graph()
+        self.graph.update_axes()
         canvas = FigureCanvasTkAgg(
             self.graph.fig, master=self.weight_change_graph_labelframe
         )
@@ -81,17 +79,21 @@ class WeightTrackerGUI:
         canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
     def add_mark(self, weight: float):
-        self.weight_validation()
-        self.graph.add_mark(self.date_label.cget("text"), weight)
-        self.update_graph()
+        if self.weight_validation(weight):
+            self.graph.add_mark(self.date_label.cget("text"), weight)
+            self.update_graph()
 
     def remove_last_mark(self):
         if len(self.graph.marks) != 0:
             self.graph.remove_last_mark()
             self.update_graph()
 
-    def weight_validation(self):
-        pass
+    def weight_validation(self, weight):
+        try:
+            float_value = float(weight)
+            return float_value > 0
+        except (ValueError, TypeError):
+            return False
 
     def run(self):
         self.root.mainloop()
