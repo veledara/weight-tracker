@@ -1,6 +1,6 @@
 from asyncio.windows_events import NULL
 import tkinter as tk
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import ttk
 from datetime import datetime
 from graph import GraphMaker
@@ -38,7 +38,7 @@ class WeightTrackerGUI:
         )
         self.date_label = ttk.Label(self.add_frame, font=("Arial", 16))
         self.date_label.grid(column=0, row=0, sticky=(tk.N, tk.S), padx=5, pady=5)
-        self.update_label()
+        self.update_date_label()
 
         self.weight_entry = ttk.Entry(self.add_frame, width=15)
         self.weight_entry.grid(
@@ -62,16 +62,41 @@ class WeightTrackerGUI:
         self.remove_last_mark_button.grid(
             column=0, row=3, sticky=(tk.N, tk.W, tk.E, tk.S), padx=5, pady=5
         )
+        self.weight_change_label = ttk.Label(self.add_frame, font=("Arial", 12))
+        self.weight_change_label.grid(
+            column=0, row=4, sticky=(tk.N, tk.S), padx=5, pady=5
+        )
+        self.update_weight_change_label()
 
-    def update_label(self):
+    def update_weight_change_label(self):
+        if len(self.graph.marks) > 1:
+            current_weight_change = self.graph.show_weight_change()
+            start_weight_text = (
+                f"Ваш начальный вес: {self.graph.get_weight_on_start()} кг.\n"
+            )
+            current_weight_text = (
+                f"Ваш текущий вес: {self.graph.get_current_weight()} кг.\n"
+            )
+            weight_change_text = (
+                f"Вы набрали {-current_weight_change} кг."
+                if current_weight_change < 0
+                else f"Вы сбросили {current_weight_change} кг!"
+            )
+            label_text = start_weight_text + current_weight_text + weight_change_text
+        else:
+            label_text = f"Ваш вес не изменился."
+        self.weight_change_label.config(text=label_text)
+
+    def update_date_label(self):
         current_time = datetime.now().strftime(f"%d.%m.%y\n%H:%M:%S")
         self.date_label.config(text=current_time)
-        self.date_label.after(1000, self.update_label)
+        self.date_label.after(1000, self.update_date_label)
 
     def update_graph(self):
         for widgets in self.weight_change_graph_labelframe.winfo_children():
             widgets.destroy()
         self.graph.update_axes()
+        self.update_weight_change_label()
         canvas = FigureCanvasTkAgg(
             self.graph.fig, master=self.weight_change_graph_labelframe
         )
