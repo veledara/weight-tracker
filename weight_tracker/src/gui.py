@@ -92,19 +92,19 @@ class WeightTrackerGUI:
         if len(self.graph.marks) > 1:
             current_weight_change = self.graph.show_weight_change()
             start_weight_text = (
-                f"Ваш начальный вес: {self.graph.get_weight_on_start()} кг.\n"
+                f"Your starting weight: {self.graph.get_weight_on_start()} kg.\n"
             )
             current_weight_text = (
-                f"Ваш текущий вес: {self.graph.get_current_weight()} кг.\n"
+                f"Your current weight: {self.graph.get_current_weight()} kg.\n"
             )
             weight_change_text = (
-                f"Вы набрали {-current_weight_change} кг."
+                f"You have gained {-current_weight_change} kg."
                 if current_weight_change < 0
-                else f"Вы сбросили {current_weight_change} кг!"
+                else f"You have lost {current_weight_change} kg!"
             )
             label_text = start_weight_text + current_weight_text + weight_change_text
         else:
-            label_text = f"Ваш вес не изменился."
+            label_text = f"Your weight hasn't changed."
         self.weight_change_label.config(text=label_text)
 
     def add_mark(self, weight: float):

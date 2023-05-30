@@ -29,9 +29,9 @@ class GraphMaker:
 
     def update_axes(self) -> None:
         self.ax.clear()
-        self.ax.set_xlabel("Days")
+        self.ax.set_xlabel("Time")
         self.ax.set_ylabel("Weight")
-        self.ax.set_title("Weight Statistics")
+        self.ax.set_title("Weight Graph")
         self.ax.grid(True)
         self.ax.plot(
             [mark.date for mark in self.marks],
