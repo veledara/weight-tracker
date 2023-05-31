@@ -1,16 +1,18 @@
 ```
-                     __          __  _       _     _     _______             _             
-                     \ \        / / (_)     | |   | |   |__   __|           | |            
-                      \ \  /\  / /__ _  __ _| |__ | |_     | |_ __ __ _  ___| | _____ _ __ 
-                       \ \/  \/ / _ \ |/ _` | '_ \| __|    | | '__/ _` |/ __| |/ / _ \ '__|
-                        \  /\  /  __/ | (_| | | | | |_     | | | | (_| | (__|   <  __/ |   
-                         \/  \/ \___|_|\__, |_| |_|\__|    |_|_|  \__,_|\___|_|\_\___|_|   
-                                        __/ |                                              
-                                       |___/                                              
+                   __          __  _       _     _     _______             _             
+                   \ \        / / (_)     | |   | |   |__   __|           | |            
+                    \ \  /\  / /__ _  __ _| |__ | |_     | |_ __ __ _  ___| | _____ _ __ 
+                     \ \/  \/ / _ \ |/ _` | '_ \| __|    | | '__/ _` |/ __| |/ / _ \ '__|
+                      \  /\  /  __/ | (_| | | | | |_     | | | | (_| | (__|   <  __/ |   
+                       \/  \/ \___|_|\__, |_| |_|\__|    |_|_|  \__,_|\___|_|\_\___|_|   
+                                      __/ |                                              
+                                     |___/                                              
 ```
 ___
 ## **About:**
 **Weight Tracker** is a simple desktop application written in `Python`. It allows the user to make notes about their weight, which will be visualized on the graph. Thus, the **Weight Tracker** app can be used to achieve your weight loss or weight maintenance goals, as well as to monitor overall progress.
+
+![image](https://github.com/veledara/weight-tracker/assets/71222580/b38d89cc-ce46-4fed-8627-ecaa6762c3ee)
 
 ## **Purpose of creation:**
 The app was made to help people improve their weight control. Also, the goal was to improve the knowledge of the python language.
