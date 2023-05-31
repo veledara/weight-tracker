@@ -46,6 +46,9 @@ class GraphMaker:
     def remove_last_mark(self) -> None:
         self.marks.pop()
 
+    def remove_all_marks(self) -> None:
+        self.marks = []
+
     def get_weight_on_start(self) -> None:
         return self.marks[0].weight
 

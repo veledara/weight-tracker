@@ -35,9 +35,12 @@ class WeightTrackerGUI:
             column=1, row=0, sticky=(tk.N, tk.W, tk.E, tk.S), padx=20, pady=20
         )
 
+        self.options_labelframe.columnconfigure(0, weight=1)
+        self.options_labelframe.rowconfigure(0, weight=1)
+
         self.add_frame = tk.Frame(self.options_labelframe)
         self.add_frame.grid(
-            column=0, row=1, sticky=(tk.N, tk.W, tk.E, tk.S), padx=20, pady=10
+            column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S), padx=20, pady=10
         )
         self.date_label = ttk.Label(self.add_frame, font=("Arial", 16))
         self.date_label.grid(column=0, row=0, sticky=(tk.N, tk.S), padx=5, pady=5)
@@ -65,18 +68,27 @@ class WeightTrackerGUI:
         self.remove_last_mark_button.grid(
             column=0, row=3, sticky=(tk.N, tk.W, tk.E, tk.S), padx=5, pady=5
         )
-        self.weight_change_label = ttk.Label(self.add_frame, font=("Arial", 12))
-        self.weight_change_label.grid(
-            column=0, row=4, sticky=(tk.N, tk.S), padx=5, pady=5
+        self.clear_all_button = ttk.Button(
+            self.add_frame,
+            text="Clear all",
+            command=lambda: self.show_clear_all_window(),
         )
-        self.update_weight_change_label()
+        self.clear_all_button.grid(
+            column=0, row=4, sticky=(tk.N, tk.W, tk.E, tk.S), padx=5, pady=5
+        )
+        self.statistics_button = ttk.Button(
+            self.options_labelframe,
+            text="Statistics",
+            command=lambda: self.show_statistics_window(),
+        )
+        self.statistics_button.grid(column=0, row=1, sticky=tk.S, padx=5, pady=5)
+
         self.load_data()
 
     def update_graph(self):
         for widgets in self.weight_change_graph_labelframe.winfo_children():
             widgets.destroy()
         self.graph.update_axes()
-        self.update_weight_change_label()
         canvas = FigureCanvasTkAgg(
             self.graph.fig, master=self.weight_change_graph_labelframe
         )
@@ -107,6 +119,33 @@ class WeightTrackerGUI:
             label_text = f"Your weight hasn't changed."
         self.weight_change_label.config(text=label_text)
 
+    def show_statistics_window(self):
+        self.statistics_window = tk.Toplevel(self.root)
+        self.statistics_window.grab_set()
+        self.statistics_window.title("Statistics")
+        self.statistics_window.resizable(False, False)
+
+        self.statistics_window.update()
+        x = (
+            self.root.winfo_x()
+            + (self.root.winfo_width() - self.statistics_window.winfo_width()) // 2
+        )
+        y = (
+            self.root.winfo_y()
+            + (self.root.winfo_height() - self.statistics_window.winfo_height()) // 2
+        )
+        self.statistics_window.geometry(f"+{x}+{y}")
+
+        self.statistics_frame = tk.Frame(self.statistics_window)
+        self.statistics_frame.grid(
+            column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S), padx=20, pady=10
+        )
+        self.weight_change_label = ttk.Label(self.statistics_frame, font=("Arial", 12))
+        self.weight_change_label.grid(
+            column=0, row=0, sticky=(tk.N, tk.S), padx=5, pady=5
+        )
+        self.update_weight_change_label()
+
     def add_mark(self, weight: float):
         if self.weight_validation(weight):
             self.graph.add_mark(
@@ -119,6 +158,52 @@ class WeightTrackerGUI:
         if len(self.graph.marks) != 0:
             self.graph.remove_last_mark()
             self.update_graph()
+
+    def show_clear_all_window(self):
+        self.clear_window = tk.Toplevel(self.root)
+        self.clear_window.grab_set()
+        self.clear_window.title("Сlearing the graph")
+        self.clear_window.resizable(False, False)
+        self.clear_window.update()
+        x = (
+            self.root.winfo_x()
+            + (self.root.winfo_width() - self.clear_window.winfo_width()) // 2
+        )
+        y = (
+            self.root.winfo_y()
+            + (self.root.winfo_height() - self.clear_window.winfo_height()) // 2
+        )
+        self.clear_window.geometry(f"+{x}+{y}")
+
+        self.clear_window_frame = tk.Frame(self.clear_window)
+        self.clear_window_frame.grid(
+            column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S), padx=20, pady=10
+        )
+        self.are_you_sure_label = ttk.Label(
+            self.clear_window_frame, font=("Arial", 12), text="Are you sure?"
+        )
+        self.are_you_sure_label.grid(
+            column=0, row=0, sticky=(tk.N, tk.S), padx=5, pady=5, columnspan=2
+        )
+        self.yes_button = ttk.Button(
+            self.clear_window_frame,
+            text="Yes",
+            command=lambda: self.clear_all(),
+        )
+        self.yes_button.grid(column=0, row=1, sticky=(tk.N, tk.S), padx=5, pady=5)
+        self.no_button = ttk.Button(
+            self.clear_window_frame,
+            text="No",
+            command=lambda: self.clear_window.destroy(),
+        )
+        self.no_button.grid(
+            column=1, row=1, sticky=(tk.N, tk.W, tk.E, tk.S), padx=5, pady=5
+        )
+
+    def clear_all(self):
+        self.graph.remove_all_marks()
+        self.update_graph()
+        self.clear_window.destroy()
 
     def weight_validation(self, weight):
         try:
