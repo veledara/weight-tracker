@@ -9,6 +9,7 @@ packages = [{include = "weight_tracker"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 matplotlib = "^3.7.1"
+sv-ttk = "^2.6.0"
 
 
 [tool.poetry.group.dev.dependencies]

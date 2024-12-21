@@ -4,6 +4,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from datetime import datetime
 from src.graph import GraphMaker
 
+import sv_ttk
+
 
 class WeightTrackerGUI:
     graph: GraphMaker
@@ -12,6 +14,7 @@ class WeightTrackerGUI:
         self.root = tk.Tk()
         self.root.title("Weight Tracker")
         self.root.geometry("1024x512")
+        sv_ttk.set_theme("light")
         # self.root.resizable(False, False)
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
@@ -76,6 +79,17 @@ class WeightTrackerGUI:
         self.clear_all_button.grid(
             column=0, row=4, sticky=(tk.N, tk.W, tk.E, tk.S), padx=5, pady=5
         )
+        
+        # Кнопка для установки цели
+        self.set_target_button = ttk.Button(
+            self.add_frame,
+            text="Set target",
+            command=lambda: self.show_set_target_window(),
+        )
+        self.set_target_button.grid(
+            column=0, row=5, sticky=(tk.N, tk.W, tk.E, tk.S), padx=5, pady=5
+        )
+
         self.statistics_button = ttk.Button(
             self.options_labelframe,
             text="Statistics",
@@ -116,7 +130,10 @@ class WeightTrackerGUI:
             )
             label_text = start_weight_text + current_weight_text + weight_change_text
         else:
-            label_text = f"Your weight hasn't changed."
+            if len(self.graph.marks) == 1:
+                label_text = "Only one mark. No change yet."
+            else:
+                label_text = "No data available."
         self.weight_change_label.config(text=label_text)
 
     def show_statistics_window(self):
@@ -145,6 +162,46 @@ class WeightTrackerGUI:
             column=0, row=0, sticky=(tk.N, tk.S), padx=5, pady=5
         )
         self.update_weight_change_label()
+
+    def show_set_target_window(self):
+        self.set_target_window = tk.Toplevel(self.root)
+        self.set_target_window.grab_set()
+        self.set_target_window.title("Set Target Weight")
+        self.set_target_window.resizable(False, False)
+        self.set_target_window.update()
+        x = (
+            self.root.winfo_x()
+            + (self.root.winfo_width() - self.set_target_window.winfo_width()) // 2
+        )
+        y = (
+            self.root.winfo_y()
+            + (self.root.winfo_height() - self.set_target_window.winfo_height()) // 2
+        )
+        self.set_target_window.geometry(f"+{x}+{y}")
+
+        self.set_target_frame = tk.Frame(self.set_target_window)
+        self.set_target_frame.grid(
+            column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S), padx=20, pady=10
+        )
+
+        self.target_label = ttk.Label(self.set_target_frame, text="Enter target weight:")
+        self.target_label.grid(column=0, row=0, sticky=(tk.N, tk.S), padx=5, pady=5)
+
+        self.target_entry = ttk.Entry(self.set_target_frame, width=15)
+        self.target_entry.grid(column=0, row=1, sticky=(tk.N, tk.W, tk.E, tk.S), padx=5, pady=5)
+
+        self.set_target_button_confirm = ttk.Button(
+            self.set_target_frame,
+            text="OK",
+            command=lambda: self.set_target_action(self.target_entry.get()),
+        )
+        self.set_target_button_confirm.grid(column=0, row=2, sticky=(tk.N, tk.W, tk.E, tk.S), padx=5, pady=5)
+
+    def set_target_action(self, weight_str: str):
+        if self.weight_validation(weight_str):
+            self.graph.set_target_weight(float(weight_str))
+            self.update_graph()
+            self.set_target_window.destroy()
 
     def add_mark(self, weight: float):
         if self.weight_validation(weight):
