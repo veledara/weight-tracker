@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from datetime import datetime
-from graph import GraphMaker
+from src.graph import GraphMaker
 
 
 class WeightTrackerGUI:
