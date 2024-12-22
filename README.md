@@ -12,7 +12,8 @@ ___
 ## **About:**
 **Weight Tracker** is a simple desktop application written in `Python`. It allows the user to make notes about their weight, which will be visualized on the graph. Thus, the **Weight Tracker** app can be used to achieve your weight loss or weight maintenance goals, as well as to monitor overall progress.
 
-![image](https://github.com/veledara/weight-tracker/assets/71222580/b38d89cc-ce46-4fed-8627-ecaa6762c3ee)
+![image](https://github.com/user-attachments/assets/0ca88847-2a33-4086-8e08-39d9b01d3917)
+
 
 ## **Purpose of creation:**
 The app was made to help people improve their weight control. Also, the goal was to improve the knowledge of the python language.
